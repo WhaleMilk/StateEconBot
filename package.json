@@ -1,0 +1,12 @@
+{
+  "name": "econbot",
+  "version": "1.0.0",
+  "description": "a bot for managing Elanuelo and Windowbrick's economy system",
+  "license": "ISC",
+  "author": "WhaleMilk",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
