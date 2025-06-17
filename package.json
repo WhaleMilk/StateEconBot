@@ -1,17 +1,24 @@
 {
-  "name": "econbot",
-  "version": "1.0.0",
+  "name": "econ-bot",
+  "version": "0.0.1",
   "description": "a bot for managing Elanuelo and Windowbrick's economy system",
   "license": "ISC",
   "author": "WhaleMilk",
   "type": "commonjs",
-  "main": "app.js",
+  "main": "dist/bot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/bot.ts",
+    "build": "tsc",
+    "start": "node ."
   },
   "dependencies": {
-    "discord.js": "^14.19.3",
-    "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7"
+    "discord.js": "^14.20.0",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }
