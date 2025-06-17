@@ -7,6 +7,9 @@ export const data = new SlashCommandBuilder()
     .setDescription('Registers user into the economy');
 
 export async function execute(interaction: CommandInteraction) {
+    if(currency.has(interaction.user.id)) {
+        return interaction.reply({content: `You are already registered in the system!`})!
+    }
     try {
         const newUser = await User.create({
             user_id: interaction.user.id,
