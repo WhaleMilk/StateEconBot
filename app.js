@@ -1,6 +1,7 @@
 const { Op, Sequelize } = require('sequelize');
 const {Client, codeBlock, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
+//const {Users} = require('./dbObjects.js');
 
 const client = new Client({intents: [GatewayIntentBits.Guilds]});
 const currency = new Collection();
@@ -59,6 +60,9 @@ client.on(Events.InteractionCreate, async interaction => {
         if(currency.get(interaction.user.id)) return interaction.reply('You already have a profile');
         createUser(interaction.user.id);
         return interaction.reply('New profile created for user ${interaction.user.tag}');
+    } else if (commandName === 'shutdown') {
+        await client.destroy();
+        process.exit(0);
     }
 });
 
