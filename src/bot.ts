@@ -4,11 +4,14 @@ import {commands} from './commands';
 import { deployCommands } from './util/deploy-commands';
 import {User} from './util/db/db-objects';
 import type {User as UserType} from "./util/db/models/Users";
+import {Keyv} from 'keyv';
+import KeyvSqlite from '@keyv/sqlite';
 
 const client = new Client( {
     //intents: ['Guilds', 'GuildMessages', 'GuildMembers', 'MessageContent'],
     intents: [GatewayIntentBits.Guilds],
 });
+
 export const currency = new Collection<string, UserType>();
 
 client.on('ready', async (c) => {
@@ -16,6 +19,8 @@ client.on('ready', async (c) => {
     for (const guild of c.guilds.cache.values()) {
         await deployCommands({guildId: guild.id});
     }
+    const storedBalances = await User.findAll();
+    storedBalances.forEach(b => currency.set(b.user_id, b));
 });
 
 client.on('guildCreate', async (guild) => {

@@ -1,21 +1,23 @@
-import { Sequelize, DataTypes } from "sequelize";
-import { initUserModel } from "./models/Users";
+import { Sequelize } from 'sequelize';
+import { initUserModel } from './models/Users';
+import * as path from 'path';
 
-const sequelize = new Sequelize('database', 'user', 'password', {
-    host: 'localhost',
+const dbPath = path.join(__dirname, '../../../database.sqlite');
+console.log('Database path:', dbPath);
+
+// Create Sequelize instance with SQLite
+const sequelize = new Sequelize({
     dialect: 'sqlite',
-    logging: false,
-    storage: 'database.sqlite',
+    storage: dbPath,
+    logging: console.log // Enable logging to see SQL queries
 });
 
+// Initialize models
 const User = initUserModel(sequelize);
 
-const force = process.argv.includes('--force') || process.argv.includes('-f');
+// Sync database with force: false to preserve data
+sequelize.sync({ force: false })
+    .then(() => console.log('Database synced successfully'))
+    .catch(err => console.error('Error syncing database:', err));
 
-sequelize.sync().then(() => {
-    console.log('Database & tables created!');
-    sequelize.close();
-}).catch((err) => {
-    console.error('Unable to connect to the database:', err);
-    sequelize.close();
-});
+export { sequelize, User };

@@ -8,8 +8,8 @@ interface UserAttributes {
 interface UserCreationAttributes extends Optional<UserAttributes, 'balance'> {}
 
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public user_id!: string;
-  public balance!: number;
+  declare user_id: string;
+  declare balance: number;
 }
 
 export function initUserModel(sequelize: Sequelize): typeof User {
@@ -21,7 +21,7 @@ export function initUserModel(sequelize: Sequelize): typeof User {
       },
       balance: {
         type: DataTypes.INTEGER,
-        defaultValue: 0,
+        defaultValue: 1000,
         allowNull: false,
       },
     },
