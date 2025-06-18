@@ -34,7 +34,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
 
     fromUserData.balance -= value;
+    currency.set(fromUser.id, fromUserData);
     toUserData.balance += value;
+    currency.set(toUser?.id as string, toUserData);
 
     return interaction.reply({content: `Succesfully transferred ${value} credits from ${fromUser.username} to ${toUser?.username}'s account!`});
 }
