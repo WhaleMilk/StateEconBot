@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import {User} from "../util/db/db-objects";
-import type {User as UserType} from "../util/db/models/Users";
-import { currency } from "../bot";
+import { User, sequelize } from "../util/db/db-init";
+import { Transaction } from "sequelize";
 
 export const data = new SlashCommandBuilder()
     .setName('transfer')
@@ -18,25 +17,72 @@ export const data = new SlashCommandBuilder()
             .setRequired(true));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-    const fromUser = interaction.user;
-    const fromUserData = currency.get(fromUser.id);
-    const toUser = interaction.options.getUser('target');
-    const toUserData = currency.get(toUser?.id as string);
-    const value = interaction.options.getInteger('value');
-    if (!fromUserData || !toUserData) {
-        return interaction.reply({content: `One or more users in that interaction are not registered.`});
-    }
-    if (!value) {
-        return interaction.reply({content: `Please enter a valid amount`});
-    }
-    if (value > fromUserData.balance) {
-        return interaction.reply({content: `You do not have enough credits to complete that transaction`});
-    }
+    try {
+        const fromUser = interaction.user;
+        const toUser = interaction.options.getUser('target');
+        const value = interaction.options.getInteger('value');
 
-    fromUserData.balance -= value;
-    currency.set(fromUser.id, fromUserData);
-    toUserData.balance += value;
-    currency.set(toUser?.id as string, toUserData);
+        if (!toUser) {
+            return await interaction.reply({
+                content: 'Please specify a valid target user',
+                ephemeral: true
+            });
+        }
 
-    return interaction.reply({content: `Succesfully transferred ${value} credits from ${fromUser.username} to ${toUser?.username}'s account!`});
+        if (!value || value <= 0) {
+            return await interaction.reply({
+                content: 'Please enter a valid positive amount',
+                ephemeral: true
+            });
+        }
+
+        // Get both users from database
+        const [fromUserRecord, toUserRecord] = await Promise.all([
+            User.findByPk(fromUser.id),
+            User.findByPk(toUser.id)
+        ]);
+
+        if (!fromUserRecord || !toUserRecord) {
+            return await interaction.reply({
+                content: 'One or more users are not registered in the system.',
+                ephemeral: true
+            });
+        }
+
+        if (value > fromUserRecord.balance) {
+            return await interaction.reply({
+                content: `You don't have enough credits. Your balance: ${fromUserRecord.balance}`,
+                ephemeral: true
+            });
+        }
+
+        console.log(`Transferring ${value} credits from ${fromUser.username} to ${toUser.username}`);
+        console.log(`Current balances - From: ${fromUserRecord.balance}, To: ${toUserRecord.balance}`);
+
+        // Update database using a transaction to ensure both updates succeed or both fail
+        await sequelize.transaction(async (t: Transaction) => {
+            fromUserRecord.balance -= value;
+            toUserRecord.balance += value;
+            
+            await Promise.all([
+                fromUserRecord.save({ transaction: t }),
+                toUserRecord.save({ transaction: t })
+            ]);
+        });
+
+        console.log(`New balances - From: ${fromUserRecord.balance}, To: ${toUserRecord.balance}`);
+
+        return await interaction.reply({
+            content: `Successfully transferred ${value} credits from ${fromUser.username} to ${toUser.username}!
+New balances:
+${fromUser.username}: ${fromUserRecord.balance}
+${toUser.username}: ${toUserRecord.balance}`
+        });
+    } catch (error) {
+        console.error('Error in transfer command:', error);
+        return await interaction.reply({
+            content: 'An error occurred while processing the transfer.',
+            ephemeral: true
+        });
+    }
 }
