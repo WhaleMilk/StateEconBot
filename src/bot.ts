@@ -1,26 +1,31 @@
 import 'dotenv/config';
-import { Client, Events, GatewayIntentBits, Collection, ChatInputCommandInteraction} from 'discord.js';
+import { Client, Events, GatewayIntentBits, ChatInputCommandInteraction} from 'discord.js';
 import {commands} from './commands';
 import { deployCommands } from './util/deploy-commands';
-import {User} from './util/db/db-objects';
-import type {User as UserType} from "./util/db/models/Users";
+import { initializeDatabase } from './util/db/db-init';
 import {Keyv} from 'keyv';
 import KeyvSqlite from '@keyv/sqlite';
 
-const client = new Client( {
-    //intents: ['Guilds', 'GuildMessages', 'GuildMembers', 'MessageContent'],
+const client = new Client({
     intents: [GatewayIntentBits.Guilds],
 });
 
-export const currency = new Collection<string, UserType>();
-
 client.on('ready', async (c) => {
     console.log(`${c.user.username} is online`);
-    for (const guild of c.guilds.cache.values()) {
-        await deployCommands({guildId: guild.id});
+    
+    try {
+        // Ensure database is initialized
+        await initializeDatabase();
+        
+        // Deploy commands
+        for (const guild of c.guilds.cache.values()) {
+            await deployCommands({guildId: guild.id});
+        }
+        
+        console.log('Bot initialization completed successfully');
+    } catch (error) {
+        console.error('Error during bot initialization:', error);
     }
-    const storedBalances = await User.findAll();
-    storedBalances.forEach(b => currency.set(b.user_id, b));
 });
 
 client.on('guildCreate', async (guild) => {
