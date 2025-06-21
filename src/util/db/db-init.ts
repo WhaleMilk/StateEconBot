@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { initUserModel } from './models/Users';
+import { initGovernmentModel } from './models/Government';
+import { setupAssociations } from './db-objects';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -25,6 +27,10 @@ const sequelize = new Sequelize({
 
 // Initialize models
 const User = initUserModel(sequelize);
+const Government = initGovernmentModel(sequelize);
+
+// Setup associations
+setupAssociations();
 
 // Function to initialize database
 async function initializeDatabase() {
@@ -50,4 +56,4 @@ async function initializeDatabase() {
 // Initialize the database immediately
 initializeDatabase().catch(console.error);
 
-export { sequelize, User, initializeDatabase };
+export { sequelize, User, Government, initializeDatabase };
