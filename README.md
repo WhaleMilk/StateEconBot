@@ -6,6 +6,7 @@ A discord bot written for Elanuelo and WindowBrick's state nation to simulate an
 - `/balance [user]` Checks the balance of the specified user, or your own balance if a user isn't specified. 
 - `/transfer [user] [amount]` transfers credits from the user running the command to the specified user. 
 - `/register_government [name]` registers a government for the server (aka guild) the command is being run in. One government profile per guild. 
+
 **Admin commands:**
 - `/unregister_user [user]` removes user from database
 - `/ping` it's a ping command
