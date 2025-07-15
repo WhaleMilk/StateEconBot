@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
             .setName('name')
             .setDescription('Name of government being registered')
             .setRequired(true)
-    ).setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+    ).setDefaultMemberPermissions(PermissionFlagsBits.Administrator); //requires admin perms to create government
 
 export async function execute(interaction: ChatInputCommandInteraction) {
     try {

@@ -1,5 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
-import { User } from "../util/db/db-init";
+import { Government, User } from "../util/db/db-init";
 
 export const data = new SlashCommandBuilder()
     .setName('register')
@@ -16,11 +16,16 @@ export async function execute(interaction: CommandInteraction) {
                 ephemeral: true
             });
         }
-
+        const isInGovernment = await checkForGovernment(interaction.guildId || "");
+        let guild_id = ""; 
+        if (isInGovernment) {
+            guild_id = interaction.guildId || "";
+        }
         // Create new user in database
         const newUser = await User.create({
             user_id: interaction.user.id,
-            balance: 1000
+            balance: 1000,
+            government_id: guild_id
         });
 
         console.log(`Registered new user: ${interaction.user.username} (${interaction.user.id}) with balance ${newUser.balance}`);
@@ -35,4 +40,12 @@ export async function execute(interaction: CommandInteraction) {
             ephemeral: true
         });
     }
+}
+
+async function checkForGovernment(guildId: string) {
+    const government = await Government.findByPk(guildId);
+    if (government) {
+        return true;
+    }
+    return false;
 }
