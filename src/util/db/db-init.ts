@@ -28,11 +28,12 @@ const sequelize = new Sequelize({
 // Initialize models
 const User = initUserModel(sequelize);
 const Government = initGovernmentModel(sequelize);
+// const Company = initCompanyModel(sequelize);
 
-// Setup associations
+// Setup associations between models; 
 setupAssociations();
 
-// Function to initialize database
+// Function to initialize database; mostly debugging stuff
 async function initializeDatabase() {
     try {
         // Test the connection

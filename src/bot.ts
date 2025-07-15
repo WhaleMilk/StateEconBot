@@ -28,10 +28,12 @@ client.on('ready', async (c) => {
     }
 });
 
+// Register slash commands when bot is added to a server
 client.on('guildCreate', async (guild) => {
     await deployCommands({guildId: guild.id});
 });
 
+// Slash Command Handler
 client.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) return;
 

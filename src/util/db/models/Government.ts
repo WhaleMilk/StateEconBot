@@ -5,7 +5,7 @@ interface GovernmentAttributes {
     owner_id: string;
     balance: number;
     name: string,
-    //trusted users
+    // field for trusted users
 }
 
 interface GovernmentCreationAttributes extends Optional<GovernmentAttributes, 'balance' | 'name'> {}
