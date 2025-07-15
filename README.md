@@ -17,9 +17,9 @@ See [`src/util/db/README.md`](src/util/db/README.md) for more details on the dat
 ## Setup
 
 1. **Clone the Repo**
-  ```bash 
-git clone <repo-url>
-cd EconBot 
+```bash 
+    git clone <repo-url>
+    cd EconBot 
 ```
 2. **Install dependencies if needed**
 3. **Configure environment variables:**
